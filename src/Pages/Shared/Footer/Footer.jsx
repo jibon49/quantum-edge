@@ -2,17 +2,16 @@
 
 const Footer = () => {
   return (
-    <footer className="bg-[#071400] text-white py-[42px] px-6">
+    <footer className="bg-[#071400] text-white py-8 sm:py-[42px] px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between flex-row items-center mb-12">
-          <div>
-            <h4 className="text-[32px] font-bold mb-4 leading-tight w-[612px]">
+        <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 sm:mb-12 gap-6">
+          <div className="flex-1">
+            <h4 className="text-2xl sm:text-[32px] font-bold mb-4 leading-tight max-w-full lg:w-[612px]">
               Reach Your Requirement Goals Right on Schedule
             </h4>
           </div>
-          <div className="mb-6">
-
-            <p className="text-gray-300 text-sm mb-6 w-[566px]">
+          <div className="lg:mb-6">
+            <p className="text-gray-300 text-sm mb-6 max-w-full lg:w-[566px]">
               Sign up, complete your profile, and start browsing projects. Submit
               proposals and communicate with clients to get hired.
             </p>
@@ -25,14 +24,14 @@ const Footer = () => {
           </div>
         </div>
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 text-left mb-12 border-t border-gray-700">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 text-left mb-8 sm:mb-12 border-t border-gray-700 gap-6 lg:gap-0">
           {/* Logo and CTA Section */}
-          <div className="lg:col-span-1 mt-[43px]">
-            <img src="/logo.png" alt="Logo" />
+          <div className="lg:col-span-1 mt-6 sm:mt-[43px]">
+            <img src="/logo.png" alt="Logo" className="max-w-full h-auto" />
           </div>
 
           {/* About Section */}
-          <div className=" py-[43px]">
+          <div className="py-6 sm:py-[43px]">
             <h4 className="text-lg font-semibold mb-6">About</h4>
             <ul className="space-y-3">
               <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">About Us</a></li>
@@ -42,7 +41,7 @@ const Footer = () => {
           </div>
 
           {/* Categories Section */}
-          <div className="border-l border-r border-b border-gray-700 pb-[85px] pl-[120px] py-[43px]">
+          <div className="lg:border-l lg:border-r lg:border-b border-gray-700 pb-6 sm:pb-[85px] lg:pl-[120px] py-6 sm:py-[43px]">
             <h4 className="text-lg font-semibold mb-6">Categories</h4>
             <ul className="space-y-3">
               <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">Design & Creative</a></li>
@@ -53,7 +52,7 @@ const Footer = () => {
           </div>
 
           {/* Support Section */}
-          <div className="border-b border-gray-700 pl-[120px] pb-[85px] py-[43px]">
+          <div className="lg:border-b border-gray-700 lg:pl-[120px] pb-6 sm:pb-[85px] py-6 sm:py-[43px]">
             <h4 className="text-lg font-semibold mb-6">Support</h4>
             <ul className="space-y-3">
               <li><a href="#" className="text-gray-300 hover:text-white transition-colors text-sm">Help & Support</a></li>
@@ -65,14 +64,13 @@ const Footer = () => {
         </div>
 
         {/* Social Links and Popular Posts Section */}
-        <div className="flex flex-col lg:flex-row justify-between items-start mb-12 gap-8">
+        <div className="flex flex-col lg:flex-row justify-between items-start mb-8 sm:mb-12 gap-8">
 
-          {/* Social Links - Left Side */}
-          <div className="relative flex items-center justify-center p-6 ">
-            {/* glowing circular shadow */}
+          {/* Social Links */}
+          <div className="relative flex items-center justify-center p-6 w-full lg:w-auto">
             <div className="absolute inset-0 rounded-full bg-green-500 opacity-20 blur-3xl" />
 
-            <div className="relative flex space-x-4">
+            <div className="relative flex space-x-4 justify-center lg:justify-start">
               {/* Facebook */}
               <a
                 href="#"
@@ -123,22 +121,22 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Popular Posts - Right Side */}
-          <div className="flex-1 lg:max-w-2xl">
+          {/* Popular Posts  */}
+          <div className="flex-1 lg:max-w-2xl w-full">
             <h4 className="text-lg font-semibold mb-6">Our Popular Post</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="group cursor-pointer">
                 <div className="flex items-start space-x-4 p-3 rounded-lg hover:bg-gray-800/50 transition-colors duration-300">
                   <div className="flex-shrink-0">
                     <img
                       src="/postimg.png"
                       alt="Post thumbnail"
-                      className="w-[80px] h-[60px] rounded-lg object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-16 h-12 sm:w-[80px] sm:h-[60px] rounded-lg object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-gray-400 mb-2 font-medium">November 7, 2024</p>
-                    <h5 className="text-sm w-[175px] font-medium text-white leading-5 group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                    <h5 className="text-sm font-medium text-white leading-5 group-hover:text-primary transition-colors duration-300 line-clamp-2">
                       Unveils the Best Canadian Cities for Biking
                     </h5>
                   </div>
@@ -151,12 +149,12 @@ const Footer = () => {
                     <img
                       src="/postimg.png"
                       alt="Post thumbnail"
-                      className="w-[80px] h-[60px] rounded-lg object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-16 h-12 sm:w-[80px] sm:h-[60px] rounded-lg object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-gray-400 mb-2 font-medium">November 7, 2024</p>
-                    <h5 className="text-sm w-[175px] font-medium text-white leading-5 group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                    <h5 className="text-sm font-medium text-white leading-5 group-hover:text-primary transition-colors duration-300 line-clamp-2">
                       Unveils the Best Canadian Cities for Biking
                     </h5>
                   </div>
@@ -166,8 +164,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Social Media and Copyright */}
-        <div className="border-t border-gray-700 pt-[30px]">
+        {/* Copyright */}
+        <div className="border-t border-gray-700 pt-6 sm:pt-[30px]">
           <p className="text-sm text-center text-gray-400">
             © QuantumEdge Software INC. 2025. All rights reserved.
           </p>
