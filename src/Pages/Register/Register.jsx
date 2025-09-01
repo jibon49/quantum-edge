@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { FaFacebookF, FaApple, FaTimes } from "react-icons/fa";
+import { FaFacebookF, FaGoogle, FaTimes } from "react-icons/fa";
 import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     return (
         <div className="flex items-center justify-center min-h-screen to-white py-4 px-4 lg:my-[197px]">
@@ -14,11 +15,11 @@ const Register = () => {
                 </div>
 
                 {/* Left side - Login Form */}
-                <div className="flex flex-col sm:ml-8 lg:ml-[119px] justify-center lg:mr-[150px] lg:px-12 sm:px-2 py-2 sm:w-[200px] lg:w-[447px] text-white relative z-10">
-                    <h2 className="text-2xl font-semibold mb-2">Login your account</h2>
-                    <p className="text-sm text-gray-400 mb-6">
-                        Don't have an account?{" "}
-                        <span className="text-green-500 cursor-pointer">Sign Up</span>
+                <div className="flex flex-col sm:ml-8 lg:ml-[110px] justify-center lg:mr-[100px] lg:px-12 sm:px-2 py-2 sm:w-[200px] lg:w-[447px] text-white relative z-10">
+                    <h2 className="text-3xl text-center font-bold mb-2">Create your account</h2>
+                    <p className="text-sm text-center text-gray-400 mb-6">
+                        Already have an account?{" "}
+                        <span className="text-green-500 cursor-pointer"><a href="/login">Sign in</a></span>
                     </p>
 
                     {/* Email */}
@@ -48,20 +49,26 @@ const Register = () => {
                         />}
                     </div>
 
-                    {/* Remember + Forgot */}
-                    <div className="flex items-center justify-between text-sm mb-[30px]">
-                        <label className="flex items-center space-x-2">
-                            <input type="checkbox" className="accent-green-500" />
-                            <span>Remember Me</span>
-                        </label>
-                        <span className="cursor-pointer hover:underline">
-                            Forgot Password?
-                        </span>
+                    {/* Confirm password */}
+                    <div className="flex h-[50px] items-center bg-black/40 border border-gray-500 focus-within:border-primary rounded-full px-4 py-2 mb-[30px] transition-colors">
+                        <FiLock className="text-gray-400 mr-2" />
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Confirm Password"
+                            className="bg-transparent outline-none flex-1 text-sm"
+                        />
+                        {showConfirmPassword ? <FiEye
+                            className="text-gray-400 cursor-pointer"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        /> : <FiEyeOff
+                            className="text-gray-400 cursor-pointer"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        />}
                     </div>
 
                     {/* Login Button */}
                     <button className="w-full bg-green-500 hover:bg-green-600 mb-[31px] text-white font-semibold py-2 rounded-full transition">
-                        Login Now
+                        Create account
                     </button>
 
                     {/* Divider */}
@@ -73,15 +80,18 @@ const Register = () => {
 
                     {/* Social Buttons */}
                     <div className="flex justify-center mt-[37px] space-x-4">
-                        <button className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
-                            <FaFacebookF className="text-white" />
+                        <button className="w-[120px] h-[60px] rounded-full bg-gray-800 flex items-center justify-center">
+                            <FaFacebookF className="text-white w-6 h-6" />
                         </button>
-                        <button className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
-                            <FaApple className="text-white" />
+                        <button className="w-[120px] h-[60px] rounded-full bg-gray-800 flex items-center justify-center">
+                            <FaGoogle className="text-white w-6 h-6" />
                         </button>
-                        <button className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center">
-                            <FaTimes className="text-white" />
+                        <button className="w-[120px] h-[60px] rounded-full bg-gray-800 flex items-center justify-center">
+                            <FaTimes className="text-white w-6 h-6" />
                         </button>
+                    </div>
+                    <div className="mt-[49px] text-gray-400 text-center">
+                        By joining, you agree to the Fiverr <span className="text-primary underline">Terms of Service</span> and to occasionally receive emails from us. Please read our <span className="text-primary underline">Privacy Policy</span> to learn how we use your personal data
                     </div>
                 </div>
 
