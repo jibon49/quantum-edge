@@ -1,4 +1,4 @@
-# Quantum Edge - Freelance Job Platform
+# Quantum Edge 
 
 A modern MERN stack freelance job platform where clients can post jobs and freelancers can browse and apply for opportunities.
 
