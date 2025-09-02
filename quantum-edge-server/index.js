@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const port = process.env.PORT || 5000;
-
 
 
 // middleware
@@ -13,7 +13,7 @@ app.use(express.json());
 
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_CLUSTER}.mongodb.net/?retryWrites=true&w=majority&appName=${process.env.DB_NAME}`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@quantumedge.tyowage.mongodb.net/?retryWrites=true&w=majority&appName=quantumedge`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -24,41 +24,62 @@ const client = new MongoClient(uri, {
   }
 });
 
+
+// JWT Verification Middleware
+const verifyToken = (req, res, next) => {
+  if (!req.headers.authorization) {
+    return res.status(401).send({ message: "Unauthorized access" });
+  }
+
+  const token = req.headers.authorization.split(" ")[1];
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({ message: "Forbidden access" });
+    }
+    req.decoded = decoded;
+    next();
+  });
+};
+
 async function run() {
   try {
-    // Connect the client to the server (optional starting in v4.7)
+    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    
-    // Create database and collections references
-    const database = client.db(process.env.DB_NAME || "quantumedge");
-    const usersCollection = database.collection("users");
-    const jobsCollection = database.collection("jobs");
-    
-    console.log("Successfully connected to MongoDB!");
 
-    // Routes will go here
-    
-    // Test route to verify database connection
-    app.get('/api/test', async (req, res) => {
+
+    const db = client.db("quantumDb");
+    const usersCollection = db.collection("users");
+    const jobsCollection = db.collection("jobs");
+
+
+
+    // jobs related
+    app.get('/jobs', async (req, res) => {
       try {
-        const result = await database.admin().ping();
-        res.json({ message: "Database connection successful", result });
+        const jobs = await jobsCollection.find().toArray();
+        res.status(200).json(jobs);
       } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Error fetching jobs:', error);
+        res.status(500).json({ message: 'Failed to fetch jobs' });
       }
     });
 
-  } catch (error) {
-    console.error("Failed to connect to MongoDB:", error);
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    // await client.close();
   }
 }
 run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Hello World!');
+  res.send('Hello World!');
 });
 
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
