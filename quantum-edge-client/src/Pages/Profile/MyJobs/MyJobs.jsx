@@ -8,7 +8,9 @@ import {
   FaMapMarkerAlt,
   FaDollarSign,
   FaTimes,
-  FaSave
+  FaSave,
+  FaUser,
+  FaEnvelope
 } from "react-icons/fa";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useToast from "../../../hooks/useToast";
@@ -22,11 +24,12 @@ const MyJobs = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    budget: '',
-    jobType: 'Fixed Price Project',
-    location: 'Remote',
+    priceRange: '',
+    remote: true,
     experienceLevel: 'Entry level',
+    freelancerCount: 1,
     skills: '',
+    moreSkillsCount: 0,
     deadline: '',
     status: 'active'
   });
@@ -34,54 +37,27 @@ const MyJobs = () => {
   const axiosSecure = useAxiosSecure();
   const toast = useToast();
 
-  // Mock data for demonstration (since backend is not implemented)
-  const mockJobs = [
-    {
-      _id: '1',
-      title: 'React Frontend Developer',
-      description: 'Looking for an experienced React developer to build a modern web application with responsive design and clean UI.',
-      budget: 2500,
-      jobType: 'Fixed Price Project',
-      location: 'Remote',
-      experienceLevel: 'Senior level',
-      skills: ['React', 'JavaScript', 'CSS', 'HTML'],
-      deadline: '2025-10-15',
-      status: 'active',
-      applicantsCount: 12,
-      createdAt: '2025-08-15T10:30:00Z'
-    },
-    {
-      _id: '2',
-      title: 'Full Stack MERN Developer',
-      description: 'Need a full-stack developer proficient in MERN stack to develop a complete e-commerce platform.',
-      budget: 5000,
-      jobType: 'Fixed Price Project',
-      location: 'Remote',
-      experienceLevel: 'Expert level',
-      skills: ['MongoDB', 'Express.js', 'React', 'Node.js'],
-      deadline: '2025-11-30',
-      status: 'active',
-      applicantsCount: 8,
-      createdAt: '2025-08-20T14:20:00Z'
-    }
-  ];
-
-  // Load mock data on component mount
+  // Fetch jobs from API
   useEffect(() => {
-    setLoading(true);
-    // Simulate API call delay
-    setTimeout(() => {
-      setJobs(mockJobs);
-      setLoading(false);
-    }, 1000);
+    fetchJobs();
   }, []);
+
+  const fetchJobs = async (email) => {
+  try {
+    const res = await axios.get(`/api/jobs/${email}`);
+    return res.data; // array of jobs
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+    return [];
+  }
+};
 
   // Handle form input changes
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -90,11 +66,12 @@ const MyJobs = () => {
     setFormData({
       title: '',
       description: '',
-      budget: '',
-      jobType: 'Fixed Price Project',
-      location: 'Remote',
+      priceRange: '',
+      remote: true,
       experienceLevel: 'Entry level',
+      freelancerCount: 1,
       skills: '',
+      moreSkillsCount: 0,
       deadline: '',
       status: 'active'
     });
@@ -104,16 +81,16 @@ const MyJobs = () => {
   const handleCreateJob = async (e) => {
     e.preventDefault();
     try {
-      const newJob = {
-        _id: Date.now().toString(),
+      const jobData = {
         ...formData,
         skills: formData.skills.split(',').map(skill => skill.trim()).filter(skill => skill),
-        budget: formData.budget ? parseFloat(formData.budget) : 0,
-        applicantsCount: 0,
-        createdAt: new Date().toISOString()
+        moreSkillsCount: formData.skills.split(',').length - 3 > 0 ? formData.skills.split(',').length - 3 : 0,
+        date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+        creationDate: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
       };
 
-      setJobs(prev => [newJob, ...prev]);
+      const response = await axiosSecure.post('/api/jobs', jobData);
+      setJobs(prev => [response.data, ...prev]);
       toast.success('Job created successfully!');
       setShowCreateModal(false);
       resetForm();
@@ -129,12 +106,13 @@ const MyJobs = () => {
     setFormData({
       title: job.title,
       description: job.description,
-      budget: job.budget?.toString() || '',
-      jobType: job.jobType,
-      location: job.location,
+      priceRange: job.priceRange,
+      remote: job.remote,
       experienceLevel: job.experienceLevel,
+      freelancerCount: job.freelancerCount,
       skills: job.skills?.join(', ') || '',
-      deadline: job.deadline ? job.deadline : '',
+      moreSkillsCount: job.moreSkillsCount,
+      deadline: job.deadline || '',
       status: job.status
     });
     setShowEditModal(true);
@@ -144,14 +122,14 @@ const MyJobs = () => {
   const handleUpdateJob = async (e) => {
     e.preventDefault();
     try {
-      const updatedJob = {
-        ...currentJob,
+      const updatedData = {
         ...formData,
         skills: formData.skills.split(',').map(skill => skill.trim()).filter(skill => skill),
-        budget: formData.budget ? parseFloat(formData.budget) : 0
+        moreSkillsCount: formData.skills.split(',').length - 3 > 0 ? formData.skills.split(',').length - 3 : 0
       };
 
-      setJobs(prev => prev.map(job => job._id === currentJob._id ? updatedJob : job));
+      const response = await axiosSecure.put(`/api/jobs/${currentJob._id}`, updatedData);
+      setJobs(prev => prev.map(job => job._id === currentJob._id ? response.data : job));
       toast.success('Job updated successfully!');
       setShowEditModal(false);
       setCurrentJob(null);
@@ -166,6 +144,7 @@ const MyJobs = () => {
   const handleDeleteJob = async (jobId) => {
     if (window.confirm('Are you sure you want to delete this job?')) {
       try {
+        await axiosSecure.delete(`/api/jobs/${jobId}`);
         setJobs(prev => prev.filter(job => job._id !== jobId));
         toast.success('Job deleted successfully!');
       } catch (error) {
@@ -173,16 +152,6 @@ const MyJobs = () => {
         toast.error('Failed to delete job');
       }
     }
-  };
-
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Not specified';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit'
-    });
   };
 
   const JobForm = ({ isEdit = false, onSubmit, onCancel }) => (
@@ -196,7 +165,7 @@ const MyJobs = () => {
           onChange={handleInputChange}
           required
           className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-          placeholder="e.g., Full Stack Developer"
+          placeholder="e.g., Website Design and Front-End Development"
         />
       </div>
 
@@ -215,49 +184,31 @@ const MyJobs = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Budget ($)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Price Range ($)</label>
           <input
-            type="number"
-            name="budget"
-            value={formData.budget}
+            type="text"
+            name="priceRange"
+            value={formData.priceRange}
             onChange={handleInputChange}
-            min="0"
-            step="0.01"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            placeholder="e.g., 1500"
+            placeholder="e.g., $1,200-$1,400"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Job Type</label>
-          <select
-            name="jobType"
-            value={formData.jobType}
+          <label className="block text-sm font-medium text-gray-700 mb-1">Freelancers Needed</label>
+          <input
+            type="number"
+            name="freelancerCount"
+            value={formData.freelancerCount}
             onChange={handleInputChange}
+            min="1"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-          >
-            <option value="Fixed Price Project">Fixed Price Project</option>
-            <option value="Hourly Project">Hourly Project</option>
-            <option value="Full-time">Full-time</option>
-            <option value="Part-time">Part-time</option>
-            <option value="Contract">Contract</option>
-          </select>
+          />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-          <input
-            type="text"
-            name="location"
-            value={formData.location}
-            onChange={handleInputChange}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            placeholder="e.g., Remote, New York, USA"
-          />
-        </div>
-
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Experience Level</label>
           <select
@@ -272,48 +223,59 @@ const MyJobs = () => {
             <option value="Expert level">Expert level</option>
           </select>
         </div>
+
+        <div className="flex items-center space-x-2 pt-6">
+          <input
+            type="checkbox"
+            name="remote"
+            checked={formData.remote}
+            onChange={handleInputChange}
+            className="rounded border-gray-300 text-primary focus:ring-primary"
+          />
+          <label className="text-sm font-medium text-gray-700">Remote Work</label>
+        </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Skills</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Skills *</label>
         <input
           type="text"
           name="skills"
           value={formData.skills}
           onChange={handleInputChange}
+          required
           className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
           placeholder="e.g., React, Node.js, MongoDB (comma separated)"
         />
+        <p className="text-xs text-gray-500 mt-1">Enter at least 3 skills separated by commas</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
+        <input
+          type="date"
+          name="deadline"
+          value={formData.deadline}
+          onChange={handleInputChange}
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+        />
+      </div>
+
+      {isEdit && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
-          <input
-            type="date"
-            name="deadline"
-            value={formData.deadline}
+          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <select
+            name="status"
+            value={formData.status}
             onChange={handleInputChange}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-          />
+          >
+            <option value="active">Active</option>
+            <option value="paused">Paused</option>
+            <option value="closed">Closed</option>
+          </select>
         </div>
-
-        {isEdit && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="active">Active</option>
-              <option value="paused">Paused</option>
-              <option value="closed">Closed</option>
-            </select>
-          </div>
-        )}
-      </div>
+      )}
 
       <div className="flex justify-end space-x-3 pt-4">
         <button
@@ -392,43 +354,54 @@ const MyJobs = () => {
                       </span>
                     </div>
                     
-                    <p className="text-gray-600 mb-3 line-clamp-2">{job.description}</p>
+                    <p className="text-gray-600 mb-3">{job.description}</p>
                     
                     <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
                       <div className="flex items-center space-x-1">
                         <FaDollarSign size={14} />
-                        <span>${job.budget || 'Not specified'}</span>
+                        <span>{job.priceRange}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <FaMapMarkerAlt size={14} />
-                        <span>{job.location}</span>
+                        <span>{job.remote ? 'Remote' : 'On-site'}</span>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <FaCalendar size={14} />
-                        <span>Deadline: {formatDate(job.deadline)}</span>
+                        <FaUser size={14} />
+                        <span>{job.freelancerCount} freelancer{job.freelancerCount > 1 ? 's' : ''} needed</span>
                       </div>
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-4">
                       {job.skills?.slice(0, 3).map((skill, index) => (
-                        <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                        <span key={index} className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
                           {skill}
                         </span>
                       ))}
-                      {job.skills?.length > 3 && (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                          +{job.skills.length - 3} more
+                      {job.moreSkillsCount > 0 && (
+                        <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
+                          +{job.moreSkillsCount} more
                         </span>
                       )}
+                    </div>
+
+                    <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <div className="flex items-center space-x-1">
+                        <FaUser size={12} />
+                        <span>Posted by: {job.creatorName}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <FaEnvelope size={12} />
+                        <span>{job.creatorEmail}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-center pt-4 border-t border-gray-200">
                   <div className="text-sm text-gray-500">
-                    <span>{job.applicantsCount || 0} applicants</span>
+                    <span>Posted on {job.creationDate}</span>
                     <span className="mx-2">•</span>
-                    <span>Created {formatDate(job.createdAt)}</span>
+                    <span>Experience: {job.experienceLevel}</span>
                   </div>
                   
                   <div className="flex space-x-2">

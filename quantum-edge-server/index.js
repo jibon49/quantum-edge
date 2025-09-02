@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const { ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
 
@@ -64,6 +65,96 @@ async function run() {
         res.status(500).json({ message: 'Failed to fetch jobs' });
       }
     });
+
+    app.get("/api/jobs/:email", async (req, res) => {
+      try {
+        const email = req.params.email;
+        const jobs = await jobsCollection
+          .find({ "creatorEmail": email })
+          .sort({ _id: -1 })
+          .toArray();
+        res.json(jobs);
+        console.log("Fetching jobs for user:", email);
+      } catch (err) {
+        res.status(500).json({ message: err.message });
+      }
+    });
+
+    // Create a new job
+    app.post("/api/jobs", async (req, res) => {
+      try {
+        const jobData = req.body;
+        
+        // Validate required fields
+        if (!jobData.title || !jobData.description || !jobData.creatorEmail) {
+          return res.status(400).json({ message: "Title, description, and creator email are required" });
+        }
+
+        // Create job object with proper structure
+        const newJob = {
+          ...jobData,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        const result = await jobsCollection.insertOne(newJob);
+        const createdJob = await jobsCollection.findOne({ _id: result.insertedId });
+        
+        res.status(201).json(createdJob);
+        console.log("Job created for user:", jobData.creatorEmail);
+      } catch (err) {
+        console.error("Error creating job:", err);
+        res.status(500).json({ message: err.message });
+      }
+    });
+
+    // Update a job
+    app.put("/api/jobs/:id", async (req, res) => {
+      try {
+        const jobId = req.params.id;
+        const updateData = req.body;
+
+        if (!ObjectId.isValid(jobId)) {
+          return res.status(400).json({ message: "Invalid job ID" });
+        }
+
+        // Add updated timestamp
+        updateData.updatedAt = new Date();
+
+        const result = await jobsCollection.updateOne(
+          { _id: new ObjectId(jobId) },
+          { $set: updateData }
+        );
+
+        if (result.matchedCount === 0) {
+          return res.status(404).json({ message: "Job not found" });
+        }
+
+        const updatedJob = await jobsCollection.findOne({ _id: new ObjectId(jobId) });
+        res.json(updatedJob);
+        console.log("Job updated:", jobId);
+      } catch (err) {
+        console.error("Error updating job:", err);
+        res.status(500).json({ message: err.message });
+      }
+    });
+
+    // Delete a job
+    app.delete("/api/jobs/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const result = await jobsCollection.deleteOne({
+          _id: new ObjectId(id),
+        });
+        if (result.deletedCount === 0) {
+          return res.status(404).json({ message: "Job not found" });
+        }
+        res.json({ message: "Job deleted successfully" });
+      } catch (err) {
+        res.status(500).json({ message: err.message });
+      }
+    });
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
