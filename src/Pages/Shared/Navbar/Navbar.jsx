@@ -17,7 +17,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="w-full bg-[#0a1b0a] text-white shadow-md px-4 sm:px-6 py-3">
+        <nav className="w-full bg-[#071400] text-white shadow-md px-4 sm:px-6 py-8">
             <div className="flex items-center justify-between lg:justify-around">
                 {/*  Logo + Categories */}
                 <div className="flex items-center space-x-3 lg:space-x-6">
@@ -33,11 +33,11 @@ const Navbar = () => {
                 </div>
 
                 {/* Center: Dropdown - Hidden on mobile */}
-                <div className="hidden lg:block bg-[#88888838] rounded-lg">
+                <div className="hidden h-[50px] lg:block bg-[#88888838] rounded-lg">
                     <div className="relative py-[7px] pl-[10px] pr-[203px]">
                     <button
                         onClick={() => setOpen(!open)}
-                        className="bg-green-900/30 px-4 py-2 rounded-md flex items-center space-x-2 hover:bg-green-900/50 transition"
+                        className="bg-green-900/30 px-4 py-1 rounded-md flex items-center space-x-2 hover:bg-green-900/50 transition"
                     >
                         <span>Freelancer</span>
                         <FaCaretDown size={16}/>
