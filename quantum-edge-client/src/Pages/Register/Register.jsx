@@ -3,6 +3,7 @@ import { FaFacebookF, FaGoogle, FaTimes } from "react-icons/fa";
 import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import useToast from "../../hooks/useToast";
 
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -14,22 +15,23 @@ const Register = () => {
     
     const { createUser, updateProfile, signInWithGoogle } = useAuth();
     const navigate = useNavigate();
+    const toast = useToast();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
         if (!email || !password || !confirmPassword) {
-            alert("Please fill in all fields");
+            toast.error("Please fill in all fields");
             return;
         }
         
         if (password !== confirmPassword) {
-            alert("Passwords do not match");
+            toast.error("Passwords do not match");
             return;
         }
         
         if (password.length < 6) {
-            alert("Password must be at least 6 characters long");
+            toast.error("Password must be at least 6 characters long");
             return;
         }
         
@@ -43,11 +45,11 @@ const Register = () => {
             // Update profile if needed (you can add name field later)
             // await updateProfile("User Name", "");
             
-            alert("Account created successfully!");
+            toast.success("Account created successfully!");
             navigate("/login");
         } catch (error) {
             console.error("Registration error:", error);
-            alert(error.message || "Registration failed. Please try again.");
+            toast.error(error.message || "Registration failed. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -58,11 +60,11 @@ const Register = () => {
         
         try {
             await signInWithGoogle();
-            alert("Google sign-up successful!");
+            toast.success("Google sign-up successful!");
             navigate("/");
         } catch (error) {
             console.error("Google sign-up error:", error);
-            alert(error.message || "Google sign-up failed. Please try again.");
+            toast.error(error.message || "Google sign-up failed. Please try again.");
         } finally {
             setLoading(false);
         }

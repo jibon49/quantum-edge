@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaCaretDown, FaBars, FaTimes, FaUser, FaSignOutAlt } from "react-icons/fa";
 import { BiCategory } from "react-icons/bi";
 import useAuth from "../../../hooks/useAuth";
+import useToast from "../../../hooks/useToast";
 
 const Navbar = () => {
     const [open, setOpen] = useState(false);
@@ -10,6 +11,7 @@ const Navbar = () => {
     const [userDropdownOpen, setUserDropdownOpen] = useState(false);
     const navigate = useNavigate();
     const { user, logOut } = useAuth();
+    const toast = useToast();
 
     const handleLogin = () => {
         navigate('/login');
@@ -22,11 +24,11 @@ const Navbar = () => {
     const handleLogout = async () => {
         try {
             await logOut();
-            alert("Logged out successfully!");
+            toast.success("Logged out successfully!");
             navigate('/login');
         } catch (error) {
             console.error("Logout error:", error);
-            alert("Failed to logout");
+            toast.error("Failed to logout");
         }
     };
 

@@ -3,6 +3,7 @@ import { FaFacebookF, FaGoogle, FaTimes } from "react-icons/fa";
 import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
+import useToast from "../../hooks/useToast";
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +14,7 @@ const Login = () => {
     const { logIn, signInWithGoogle } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
+    const toast = useToast();
     
     const from = location.state?.from?.pathname || "/";
 
@@ -20,7 +22,7 @@ const Login = () => {
         e.preventDefault();
         
         if (!email || !password) {
-            alert("Please fill in all fields");
+            toast.error("Please fill in all fields");
             return;
         }
         
@@ -28,11 +30,11 @@ const Login = () => {
         
         try {
             await logIn(email, password);
-            alert("Login successful!");
+            toast.success("Login successful!");
             navigate(from, { replace: true });
         } catch (error) {
             console.error("Login error:", error);
-            alert(error.message || "Login failed. Please try again.");
+            toast.error(error.message || "Login failed. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -43,11 +45,11 @@ const Login = () => {
         
         try {
             await signInWithGoogle();
-            alert("Google sign-in successful!");
+            toast.success("Google sign-in successful!");
             navigate(from, { replace: true });
         } catch (error) {
             console.error("Google sign-in error:", error);
-            alert(error.message || "Google sign-in failed. Please try again.");
+            toast.error(error.message || "Google sign-in failed. Please try again.");
         } finally {
             setLoading(false);
         }
