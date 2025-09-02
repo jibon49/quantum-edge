@@ -45,7 +45,6 @@ const Home = () => {
   const { user } = useAuth();
   const toast = useToast();
 
-  // Fetch jobs from backend
   useEffect(() => {
     const fetchJobs = async () => {
       try {
@@ -64,25 +63,21 @@ const Home = () => {
     fetchJobs();
   }, [axiosPublic]);
 
-  // Filter jobs based on search query
   const filteredJobs = jobs.filter(job =>
     job.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     job.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     job.skills?.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  // Handle job card click
   const handleJobCardClick = (job) => {
     setSelectedJob(job);
     setShowJobModal(true);
   };
 
-  // Check if current user owns the job
   const isJobOwner = (job) => {
     return user && user.email === job.creatorEmail;
   };
 
-  // Handle input changes for job creation form
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -91,7 +86,6 @@ const Home = () => {
     }));
   };
 
-  // Handle input changes for job edit form
   const handleEditInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setEditFormData(prev => ({
@@ -141,7 +135,6 @@ const Home = () => {
 
       const response = await axiosSecure.post('/api/jobs', jobData);
 
-      // Add the new job to the list
       setJobs(prev => [response.data, ...prev]);
 
       toast.success('Job posted successfully!');
@@ -164,7 +157,6 @@ const Home = () => {
     }
   };
 
-  // Handle job update
   const handleUpdateJob = async (e) => {
     e.preventDefault();
 
@@ -189,7 +181,6 @@ const Home = () => {
 
       const response = await axiosSecure.put(`/api/jobs/${selectedJob._id}`, updatedData);
 
-      // Update the job in the list
       setJobs(prev => prev.map(job =>
         job._id === selectedJob._id ? response.data : job
       ));
@@ -222,7 +213,6 @@ const Home = () => {
     setShowJobModal(false);
   };
 
-  // Handle job delete
   const handleDeleteJob = async (jobId, jobTitle) => {
     const confirmMessage = `Are you sure you want to delete "${jobTitle}"?`;
 
@@ -235,7 +225,6 @@ const Home = () => {
           return;
         }
 
-        // Refresh jobs list
         const jobsResponse = await axiosPublic.get('/jobs');
         setJobs(jobsResponse.data);
 
@@ -248,13 +237,11 @@ const Home = () => {
     }
   };
 
-  // Close modal
   const closeModal = () => {
     setShowJobModal(false);
     setSelectedJob(null);
   };
 
-  // Close create modal
   const closeCreateModal = () => {
     setShowCreateModal(false);
     setFormData({
@@ -269,7 +256,6 @@ const Home = () => {
     });
   };
 
-  // Close edit modal
   const closeEditModal = () => {
     setShowEditModal(false);
   };

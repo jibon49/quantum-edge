@@ -52,7 +52,6 @@ const MyJobs = () => {
   }
 };
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -118,7 +117,6 @@ const MyJobs = () => {
     setShowEditModal(true);
   };
 
-  // Update job
   const handleUpdateJob = async (e) => {
     e.preventDefault();
     try {
@@ -140,7 +138,6 @@ const MyJobs = () => {
     }
   };
 
-  // Delete job
   const handleDeleteJob = async (jobId) => {
     if (window.confirm('Are you sure you want to delete this job?')) {
       try {

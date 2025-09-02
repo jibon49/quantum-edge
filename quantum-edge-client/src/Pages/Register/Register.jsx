@@ -38,12 +38,8 @@ const Register = () => {
         setLoading(true);
         
         try {
-            // Create user with email and password
             const result = await createUser(email, password);
             console.log("User created:", result.user);
-            
-            // Update profile if needed (you can add name field later)
-            // await updateProfile("User Name", "");
             
             toast.success("Account created successfully!");
             navigate("/login");

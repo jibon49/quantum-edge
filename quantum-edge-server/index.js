@@ -6,17 +6,12 @@ const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
-
-// middleware
 app.use(cors());
 app.use(express.json());
-
-
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@quantumedge.tyowage.mongodb.net/?retryWrites=true&w=majority&appName=quantumedge`;
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -25,8 +20,6 @@ const client = new MongoClient(uri, {
   }
 });
 
-
-// JWT Verification Middleware
 const verifyToken = (req, res, next) => {
   if (!req.headers.authorization) {
     return res.status(401).send({ message: "Unauthorized access" });
@@ -45,17 +38,12 @@ const verifyToken = (req, res, next) => {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-
 
     const db = client.db("quantumDb");
     const usersCollection = db.collection("users");
     const jobsCollection = db.collection("jobs");
 
-
-
-    // jobs related
     app.get('/jobs', async (req, res) => {
       try {
         const jobs = await jobsCollection.find().toArray();
@@ -80,17 +68,14 @@ async function run() {
       }
     });
 
-    // Create a new job
     app.post("/api/jobs", async (req, res) => {
       try {
         const jobData = req.body;
         
-        // Validate required fields
         if (!jobData.title || !jobData.description || !jobData.creatorEmail) {
           return res.status(400).json({ message: "Title, description, and creator email are required" });
         }
 
-        // Create job object with proper structure
         const newJob = {
           ...jobData,
           createdAt: new Date(),
@@ -108,7 +93,6 @@ async function run() {
       }
     });
 
-    // Update a job
     app.put("/api/jobs/:id", async (req, res) => {
       try {
         const jobId = req.params.id;
@@ -118,7 +102,6 @@ async function run() {
           return res.status(400).json({ message: "Invalid job ID" });
         }
 
-        // Add updated timestamp
         updateData.updatedAt = new Date();
 
         const result = await jobsCollection.updateOne(
@@ -139,7 +122,6 @@ async function run() {
       }
     });
 
-    // Delete a job
     app.delete("/api/jobs/:id", async (req, res) => {
       try {
         const id = req.params.id;
@@ -155,13 +137,9 @@ async function run() {
       }
     });
 
-
-    // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
   }
 }
 run().catch(console.dir);
