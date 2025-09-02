@@ -92,7 +92,13 @@ const Navbar = () => {
                             {userDropdownOpen && (
                                 <div className="absolute right-0 mt-2 w-48 bg-[#0f0f0f] rounded-md shadow-lg border border-green-900/50 z-50">
                                     <ul className="py-2">
-                                        <li className="px-4 py-2 hover:bg-green-900/40 cursor-pointer flex items-center space-x-2">
+                                        <li 
+                                            onClick={() => {
+                                                navigate('/profile');
+                                                setUserDropdownOpen(false);
+                                            }}
+                                            className="px-4 py-2 hover:bg-green-900/40 cursor-pointer flex items-center space-x-2"
+                                        >
                                             <FaUser size={14} />
                                             <span>Profile</span>
                                         </li>
@@ -171,6 +177,16 @@ const Navbar = () => {
                                     <FaUser size={16} />
                                     <span className="text-sm">{user.email}</span>
                                 </div>
+                                <button 
+                                    onClick={() => {
+                                        navigate('/profile');
+                                        setMobileMenuOpen(false);
+                                    }}
+                                    className="bg-green-600 px-5 py-2 rounded-full font-medium hover:bg-green-700 transition mx-auto flex items-center space-x-2"
+                                >
+                                    <FaUser size={14} />
+                                    <span>Profile</span>
+                                </button>
                                 <button 
                                     onClick={handleLogout}
                                     className="bg-red-600 px-5 py-2 rounded-full font-medium hover:bg-red-700 transition mx-auto flex items-center space-x-2"
